@@ -11,7 +11,7 @@ const HeaderBtns = () => {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="flex-center w-full py-4 min-h-14 font-isidora font-semibold text-[10px] leading-[11px]">
+    <div className="flex-center header-btns w-full py-4 min-h-14 font-isidora font-semibold text-[10px] leading-[11px]">
       <div className="w-full px-4 flex-between text-xs lg:text-lg flex-wrap gap-2">
         <div className="left-btns flex-center uppercase gap-7">
           <div className="flex-center grey_round gap-3 text-[10px] leading-[11px]">

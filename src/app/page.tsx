@@ -23,7 +23,7 @@ export default function Home() {
                   <ImageContainer
                     src="/icons/arrow_on_flowspark.png"
                     alt="Flowspark Arrow"
-                    className="absolute w-[194px] h-[147.36px]"
+                    className="absolute float-down w-[194px] h-[147.36px]"
                     fill
                   />
                 </div>
@@ -79,10 +79,11 @@ export default function Home() {
                 btnName="Start a free trial"
                 invertBtn
               />
-              <div className="absolute right-2 -bottom-12 lg:-right-32 lg:-bottom-10">
+              <div className="absolute right-2 -bottom-14 lg:-right-32 lg:-bottom-10">
                 <ImageContainer
                   src="/icons/pointy_arrow.png"
                   alt="arrow pointing to start a free trial"
+                  className="float-up"
                   w={120}
                   h={120}
                 />

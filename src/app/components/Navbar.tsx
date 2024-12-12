@@ -14,7 +14,7 @@ const Navbar = () => {
   return (
     <nav className="flex-center w-full font-quicksand font-semibold">
       <div className="w-full lg:hidden flex-center flex-col relative">
-        <div className="flex-between py-4 px-3 bg-secondary rounded-full lg:hidden w-11/12">
+        <div className="flex-between py-4 px-3 bg-secondary rounded-full lg:hidden w-11/12 ">
           <AppLogo />
           {openNav ? (
             <RiCloseLargeFill onClick={() => setOpenNav(false)} />
@@ -45,12 +45,12 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className="hidden lg:flex flex-between bg-secondary rounded-full py-8 px-5 w-11/12">
-        <div className="w-full flex-start gap-5 xl:gap-10">
+      <div className="hidden lg:flex flex-between bg-secondary rounded-full py-8 px-5 w-11/12 xl:w-10/12">
+        <div className="w-full flex-start gap-4 xl:gap-4">
           <AppLogo />
 
           <div className="w-7/12">
-            <ul className="flex-between w-full font-bold gap-4 xl:gap-8 text-text-secondary">
+            <ul className="flex-start w-full font-bold gap-4 xl:gap-8 text-text-secondary">
               <li>Features</li>
               <li>Industries</li>
               <li>Pricing</li>

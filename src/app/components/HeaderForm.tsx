@@ -90,6 +90,7 @@ const HeaderForm = () => {
         <ImageContainer
           src="/icons/form_big_star.png"
           alt="form star"
+          className="hover:animate-ping"
           w={68}
           h={68}
         />

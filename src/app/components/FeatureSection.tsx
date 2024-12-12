@@ -46,11 +46,12 @@ const FeatureSection = () => {
 
   return (
     <section className="flex-center w-full my-10">
-      <div className="w-11/12 flex-center flex-col lg:flex-row bg-secondary rounded-3xl py-5 lg:py-16 gap-10 h-full relative">
+      <div className="w-11/12 xl:w-10/12 flex-center flex-col lg:flex-row bg-secondary rounded-3xl py-5 lg:py-16 gap-10 h-full relative">
         <div className="absolute -top-5 right-[10%]">
           <ImageContainer
             src="/icons/star_on_features.png"
             alt="small star vector"
+            className="hover:animate-ping"
             w={39}
             h={39}
           />
