@@ -1,101 +1,100 @@
-import Image from "next/image";
+import HeaderBtns from "./components/HeaderBtns";
+import Navbar from "./components/Navbar";
+import HeaderForm from "./components/HeaderForm";
+import FeatureSection from "./components/FeatureSection";
+import CustomButton from "./components/shared/CustomButton";
+import Footer from "./components/shared/Footer";
+import BookingModal from "./components/BookingModal";
+import ScheduleCallBtn from "./components/shared/ScheduleCallBtn";
+import ImageContainer from "./components/shared/ImageContainer";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main className="min-w-full w-full">
+      <header className="w-full h-full ">
+        <HeaderBtns />
+        <Navbar />
+        <BookingModal />
+        <div className="header-contents flex-center w-full  min-h-[980px] h-[100svh] lg:min-h-[70svh] lg:h-full my-10">
+          <div className="w-11/12 lg:w-11/12 flex justify-evenly items-start flex-col lg:flex-row flex-wrap lg:flex-nowrap">
+            <div className="cta-content flex-start items-start h-full flex-col gap-6 w-full lg:w-4/12">
+              <div className="cta-content-header w-full relative">
+                <div className="absolute -top-28 left-1">
+                  <ImageContainer
+                    src="/icons/arrow_on_flowspark.png"
+                    alt="Flowspark Arrow"
+                    className="absolute w-[194px] h-[147.36px]"
+                    fill
+                  />
+                </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+                <h1 className="text-4xl font-isidora font-semibold lg:text-5xl">
+                  FlowSpark
+                </h1>
+                <p className="uppercase font-semibold font-sans">
+                  Digital Marketing Solutions
+                </p>
+              </div>
+              <div className="cta-content-description">
+                <p>
+                  We believe that marketing shouldn&apos;t be a headache, so
+                  we&apos;ve crafted a platform that&apos;s super easy to use
+                  but doesn&apos;t skimp on the powerful stuff.
+                </p>
+              </div>
+              <div className="flex-center w-full">
+                <ImageContainer
+                  src="/icons/Illustration.png"
+                  alt="Illustration"
+                  fill
+                  className="w-[223px] h-[225.8px]"
+                />
+              </div>
+            </div>
+            <div className="w-full lg:w-5/12">
+              <HeaderForm />
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </header>
+
+      <FeatureSection />
+
+      <section className="flex-center w-full my-40">
+        <div className="flex-center flex-col gap-9 w-11/12">
+          <h2 className="text-3xl lg:text-4xl font-quicksand font-semibold text-center text-text-body">
+            Want to see how we can help?
+          </h2>
+          <p className="text-text-body w-full lg:w-5/12 xl:w-4/12 text-center">
+            Ready to transform your marketing? Book a demo or start your free
+            trial today and see firsthand how we can make your marketing efforts
+            more effective and enjoyable!
+          </p>
+          <div className="flex-center flex-col gap-4">
+            <div className="flex-center flex-wrap lg:flex-nowrap gap-4 relative">
+              <ScheduleCallBtn />
+              <CustomButton
+                isLink
+                href={"/"}
+                btnName="Start a free trial"
+                invertBtn
+              />
+              <div className="absolute right-2 -bottom-12 lg:-right-32 lg:-bottom-10">
+                <ImageContainer
+                  src="/icons/pointy_arrow.png"
+                  alt="arrow pointing to start a free trial"
+                  w={120}
+                  h={120}
+                />
+              </div>
+            </div>
+            <p className="text-accent mt-5 lg:mt-0">
+              Free 14 day trial. Cancel anytime
+            </p>
+          </div>
+        </div>
+      </section>
+      <Footer />
+    </main>
   );
 }
