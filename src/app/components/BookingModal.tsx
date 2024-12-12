@@ -272,14 +272,14 @@ const BookingModal = () => {
           </div>
           <div className="w-full lg:w-full bg-secondary flex-center flex-col items-start rounded-3xl py-10">
             {showStatus && isSuccess && (
-              <span className="text-green-400 w-11/12 text-lg lg:text-xl">
+              <span className="text-green-400 w-11/12 px-4 text-lg lg:text-xl">
                 Thank you for requesting for a booking. Someone from the team
                 should reach out to you soon!
               </span>
             )}
 
             {showStatus && makeBookingReqIsError && (
-              <span className="text-red-400 w-11/12 text-lg lg:text-xl">
+              <span className="text-red-400 w-11/12 px-4 text-lg lg:text-xl">
                 {makeBookingReqError.message}
               </span>
             )}
