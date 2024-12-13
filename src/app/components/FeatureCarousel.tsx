@@ -1,7 +1,7 @@
 "use client";
 import useEmblaCarousel from "embla-carousel-react";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { EmblaOptionsType } from "embla-carousel";
 import {
   CarouselNextButton,
@@ -10,6 +10,7 @@ import {
 } from "./shared/CarouselArrowButtons";
 
 import Fade from "embla-carousel-fade";
+import { useComponentStore } from "../store/componentStore";
 
 type FeatureCarouselProp = {
   slides: number[];
@@ -27,10 +28,57 @@ const FeatureCarousel = ({ slides, options }: FeatureCarouselProp) => {
     onNextButtonClick,
   } = usePrevNextButtons(emblaApi);
 
+  const carouselTimer = useComponentStore((state) => state.carouselTimer);
+  const carouselController = useComponentStore(
+    (state) => state.carouselController
+  );
+
+  const [imageLoading, setImageLoading] = useState(false);
+
+  const handleMouseEnter = () => {
+    if (carouselTimer) {
+      carouselTimer.stop();
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (carouselTimer) {
+      carouselTimer.start();
+    }
+  };
+
+  const handleSetImageLoading = () => {
+    setImageLoading(true);
+  };
+
+  useEffect(() => {
+    if (carouselController) {
+      carouselController?.on("scroll", handleSetImageLoading);
+    }
+
+    return () => {
+      if (carouselController) {
+        carouselController?.off("scroll", handleSetImageLoading);
+      }
+    };
+  }, [carouselController]);
+
+  useEffect(() => {
+    if (carouselTimer) {
+      if (imageLoading) {
+        carouselTimer.reset();
+      }
+    }
+  }, [imageLoading, carouselTimer]);
+
   return (
     <div>
       <div className="carousel-images">
-        <div className="embla">
+        <div
+          className="embla"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           <div className="embla__viewport" ref={emblaRef}>
             <div className="embla__container">
               {slides.map((index) => (
@@ -42,6 +90,7 @@ const FeatureCarousel = ({ slides, options }: FeatureCarouselProp) => {
                     src={`https://picsum.photos/500/350?v=${index}`}
                     alt="carousel images from picsum"
                     fill
+                    onLoad={() => setImageLoading(false)}
                     className="object-cover embla__slide__img rounded-3xl"
                     placeholder="blur"
                     blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOcP316LgAF5gI8MqGGhAAAAABJRU5ErkJggg=="

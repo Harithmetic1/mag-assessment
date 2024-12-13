@@ -9,6 +9,7 @@ import React, {
 import { EmblaCarouselType } from "embla-carousel";
 import { Timer } from "@/app/utils/utils";
 import ImageContainer from "./ImageContainer";
+import { useComponentStore } from "@/app/store/componentStore";
 
 type UsePrevNextButtonsType = {
   selectedIndex: number;
@@ -26,15 +27,15 @@ export const usePrevNextButtons = (
   const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
   const [nextBtnDisabled, setNextBtnDisabled] = useState(true);
 
-  const timer = Timer(() => {
-    if (!emblaApi) return;
-    emblaApi.scrollNext();
-  }, 3000);
+  const setCarouselTimer = useComponentStore((state) => state.setCarouselTimer);
+  const carouselTimer = useComponentStore((state) => state.carouselTimer);
 
   const onPrevButtonClick = useCallback(() => {
     if (!emblaApi) return;
     emblaApi.scrollPrev();
-    timer.reset();
+    if (carouselTimer) {
+      carouselTimer.reset();
+    }
     if (onButtonClick) {
       onButtonClick(emblaApi);
     }
@@ -43,10 +44,18 @@ export const usePrevNextButtons = (
   const onNextButtonClick = useCallback(() => {
     if (!emblaApi) return;
     emblaApi.scrollNext();
-    timer.reset();
+    if (carouselTimer) {
+      carouselTimer.reset();
+    }
     if (onButtonClick) {
       onButtonClick(emblaApi);
     }
+
+    return () => {
+      if (carouselTimer) {
+        carouselTimer.stop();
+      }
+    };
   }, [emblaApi, onButtonClick]);
 
   const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
@@ -57,7 +66,9 @@ export const usePrevNextButtons = (
 
   useEffect(() => {
     if (!emblaApi) return;
-
+    if (!carouselTimer) {
+      setCarouselTimer(emblaApi);
+    }
     onSelect(emblaApi);
     emblaApi.on("reInit", onSelect).on("select", onSelect);
   }, [emblaApi, onSelect]);

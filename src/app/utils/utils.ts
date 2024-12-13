@@ -1,5 +1,5 @@
 
-interface TimerObjectDef {
+export interface TimerObjectDef {
     stop: () => TimerObjectDef
     start: () => TimerObjectDef
     reset: () => TimerObjectDef

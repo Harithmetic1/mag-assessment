@@ -1,4 +1,5 @@
 "use client";
+import { useComponentStore } from "@/app/store/componentStore";
 import React from "react";
 
 export type FeatureCardProps = {
@@ -16,9 +17,22 @@ const FeatureCard = ({
   selected,
   setSelected,
 }: FeatureCardProps) => {
+  const carouselTimer = useComponentStore((state) => state.carouselTimer);
+  const carouselController = useComponentStore(
+    (state) => state.carouselController
+  );
+
+  const handleSelectFeature = () => {
+    if (carouselTimer && setSelected && carouselController) {
+      setSelected(id);
+      carouselTimer.reset();
+      carouselController.scrollTo(0);
+    }
+  };
+
   return (
     <div
-      onClick={() => setSelected!(id)}
+      onClick={handleSelectFeature}
       className="flex-center gap-5 cursor-pointer"
     >
       <div
