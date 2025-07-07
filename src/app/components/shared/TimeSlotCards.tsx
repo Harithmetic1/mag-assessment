@@ -26,7 +26,7 @@ const TimeSlotCards = ({
     setSelectedTimeSlot(timeSlotValue);
   };
 
-  const handleTimeSlotState = () => {
+  useEffect(() => {
     if (bookedTimeSlots && bookedTimeSlots.includes(timeSlotValue)) {
       setTimeSlotState(TimeSlotCardState.BOOKED);
     } else if (timeSlotValue == selectedTimeSlot) {
@@ -34,17 +34,14 @@ const TimeSlotCards = ({
     } else {
       setTimeSlotState(TimeSlotCardState.AVAILABLE);
     }
-  };
-
-  useEffect(() => {
-    handleTimeSlotState();
   }, [
     selectedTimeSlot,
     bookedTimeSlots,
     timeSlotValue,
-    timeSlotState,
-    handleTimeSlotState,
   ]);
+
+  const timeSlotDateObject = new Date(timeSlot)
+  const timeSlotString = `${timeSlotDateObject.getHours()}:${timeSlotDateObject.getMinutes() == 0 ? timeSlotDateObject.getMinutes() + "0" : timeSlotDateObject.getMinutes()}`
 
   return (
     <div
@@ -60,7 +57,7 @@ const TimeSlotCards = ({
       } 
       `}
     >
-      {timeSlot}
+      {timeSlotString}
     </div>
   );
 };

@@ -1,12 +1,13 @@
 import HeaderBtns from "./components/HeaderBtns";
 import Navbar from "./components/Navbar";
-import HeaderForm from "./components/HeaderForm";
+// import HeaderForm from "./components/HeaderForm";
 import FeatureSection from "./components/FeatureSection";
 import CustomButton from "./components/shared/CustomButton";
 import Footer from "./components/shared/Footer";
 import BookingModal from "./components/BookingModal";
 import ScheduleCallBtn from "./components/shared/ScheduleCallBtn";
 import ImageContainer from "./components/shared/ImageContainer";
+import ContactForm from "./components/ContactForm";
 
 export default function Home() {
   return (
@@ -15,9 +16,9 @@ export default function Home() {
         <HeaderBtns />
         <Navbar />
         <BookingModal />
-        <div className="header-contents flex-center w-full  min-h-[980px] h-[100svh] lg:min-h-[70svh] lg:h-full my-10">
-          <div className="w-11/12 lg:w-11/12 flex justify-evenly items-start flex-col lg:flex-row flex-wrap lg:flex-nowrap">
-            <div className="cta-content flex-start items-start h-full flex-col gap-6 w-full lg:w-4/12">
+        <div className="header-contents flex-center w-full min-h-[980px] h-[100svh] lg:min-h-[70svh] lg:h-full my-10">
+          <div className="w-11/12 lg:w-11/12 flex justify-evenly items-center flex-col lg:flex-row flex-wrap lg:flex-nowrap h-full">
+            <div className="cta-content flex-start justify-center items-center h-full flex-col gap-6 w-full lg:w-4/12">
               <div className="cta-content-header w-full relative">
                 <div className="absolute -top-28 left-1">
                   <ImageContainer
@@ -52,7 +53,8 @@ export default function Home() {
               </div>
             </div>
             <div className="w-full lg:w-5/12">
-              <HeaderForm />
+              {/* <HeaderForm /> */}
+              <ContactForm />
             </div>
           </div>
         </div>

@@ -5,6 +5,51 @@ export interface TimerObjectDef {
     reset: () => TimerObjectDef
 }
 
+export class ServerActionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ServerActionError";
+  }
+}
+
+// Types for the result object with discriminated union
+type Success<T> = {
+  data: T;
+  error: null;
+};
+
+type Failure<E> = {
+  data: null;
+  error: E;
+};
+
+type Result<T, E = ServerActionError> = Success<T> | Failure<E>;
+
+// Main wrapper function
+export async function tryCatch<T, E = ServerActionError>(
+  promise: Promise<T>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  errorType?: new (...args: any[]) => E
+): Promise<Result<T, E>> {
+  try {
+    const data = await promise;
+    return { data, error: null };
+  } catch (error) {
+    // If an error is of type server error return the server action error instance
+    if (error instanceof ServerActionError) {
+      return { data: null, error: error as E };
+    }
+
+    // If an error type is provided, return it
+    if (errorType) {
+      return { data: null, error: error as E };
+    }
+
+    // If no error type is provided, return a generic error
+    return { data: null, error: error as E };
+  }
+}
+
 export function Timer(fn: () => void, t: number | undefined): TimerObjectDef {
 
     let timerObj: ReturnType<typeof setInterval> | undefined;
@@ -75,7 +120,6 @@ export const getAviailableTimeSlots = (): Record<string, any>[] => {
     }
     return availableTimeSlots;
   };
-
 
 
  export const formatDate = (d: Date) => {

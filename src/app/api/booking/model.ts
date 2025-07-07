@@ -15,5 +15,14 @@ export const bookingPayloadSchema = z.object({
     createdAt: z.string().date().optional()
 })
 
+export const agentLead = z.object({
+    email: z.string().email({ message: "Invalid email address" }),
+    name: z.string(),
+    mobile: z.string().trim().min(5, "Phone number is too short!").max(15, "Phone number too long!"),
+    companyName: z.string(),
+    message: z.string(),
+})
+
+export type agentLeadType = z.infer<typeof agentLead>
 
 export type bookingType = z.infer<typeof bookingPayloadSchema>;

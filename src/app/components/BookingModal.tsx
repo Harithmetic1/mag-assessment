@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
 import { DayPicker } from "react-day-picker";
@@ -13,12 +13,12 @@ import { useForm } from "react-hook-form";
 import { bookingType } from "../api/booking/model";
 import {
   formatDate,
-  getAviailableTimeSlots,
   processFormDataPayload,
 } from "../utils/utils";
+import { getAvailableBusinessTimeSlots, TimeSlotsResponse } from "../utils/availabilityUtils";
 
 const BookingModal = () => {
-  const today = new Date();
+  const today = React.useMemo(() => new Date(), []);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [bookingDateCollection, setBookingDateCollection] = useState<
     Record<string, any>
@@ -28,6 +28,7 @@ const BookingModal = () => {
   >([""]);
   const [scrollY, setScrollY] = useState(0);
   const [showStatus, setShowStatus] = useState(false);
+  const [timeSlots, setTimeSlots] = useState<TimeSlotsResponse | null>()
 
   const {
     register,
@@ -65,11 +66,11 @@ const BookingModal = () => {
       queryKey: ["bookings"],
       refetchType: "active",
     });
-  }, [openModal]);
+  }, [openModal, queryClient]);
 
   useEffect(() => {
     setSelectedDate(today);
-  }, []);
+  }, [today]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -81,7 +82,7 @@ const BookingModal = () => {
     };
   }, [showStatus]);
 
-  const handleSelectedBookedTime = () => {
+  const handleSelectedBookedTime = useCallback(() => {
     let index;
     if (selectedDate) {
       index = formatDate(selectedDate);
@@ -89,7 +90,7 @@ const BookingModal = () => {
       index = formatDate(today);
     }
     setSelectedDateBookedTime(bookingDateCollection[index] ?? []);
-  };
+  }, [bookingDateCollection, selectedDate, today]);
 
   const handleCollectBookedTimes = (bookings: Record<string, any>[]) => {
     const bookingDateCollection: Record<string, any> = {};
@@ -160,7 +161,7 @@ const BookingModal = () => {
 
   useEffect(() => {
     handleSelectedBookedTime();
-  }, [data, bookingDateCollection, selectedDate]);
+  }, [data, bookingDateCollection, selectedDate, handleSelectedBookedTime]);
 
   const handleSubmitBooking = async (data: bookingType) => {
     if (selectedDate) {
@@ -188,15 +189,29 @@ const BookingModal = () => {
 
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  const handleModalOutsideClick = (e: MouseEvent | TouchEvent) => {
-    // console.log(e.target);
+  const handleModalOutsideClick = React.useCallback(
+    (e: MouseEvent | TouchEvent) => {
+      // console.log(e.target);
 
-    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      setOpenModal(false);
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        setOpenModal(false);
+      }
+    },
+    [setOpenModal, modalRef]
+  );
+
+    const handleGetAvailableTimeSlots = React.useCallback(async () => {
+    const { data, error } = await getAvailableBusinessTimeSlots({ date: selectedDate });
+
+    if (error !== null) {
+      console.log(error);
     }
-  };
+
+    setTimeSlots(data);
+  }, [selectedDate]);
 
   useEffect(() => {
+    handleGetAvailableTimeSlots()
     if (openModal) {
       document.addEventListener("click", handleModalOutsideClick);
     } else {
@@ -206,7 +221,9 @@ const BookingModal = () => {
     return () => {
       document.removeEventListener("click", handleModalOutsideClick);
     };
-  }, [openModal]);
+  }, [openModal, selectedDate, handleGetAvailableTimeSlots, handleModalOutsideClick]);
+
+
 
   return (
     <div
@@ -259,11 +276,11 @@ const BookingModal = () => {
                 <h2>Select a Time</h2>
               </div>
               <div className="timings grid grid-cols-2 lg:grid-cols-3 items-center align-middle justify-center gap-4">
-                {getAviailableTimeSlots().map((timeSlot) => (
+                { timeSlots && timeSlots.map((timeSlot) => (
                   <TimeSlotCards
-                    key={timeSlot.time}
-                    timeSlot={timeSlot.time}
-                    timeSlotValue={timeSlot.value}
+                    key={timeSlot.start}
+                    timeSlot={timeSlot.start}
+                    timeSlotValue={timeSlot.start}
                     bookedTimeSlots={selectedDateBookedTime}
                   />
                 ))}
