@@ -39,7 +39,7 @@ const ContactForm = () => {
   } = useMutation({
     mutationKey: ["make-booking", formValue.email],
     mutationFn: async (data: FormData) => {
-      const makeBookingReq = await fetch("https://harith-mag.app.n8n.cloud/webhook/92a4bd63-f2cf-4a39-b980-7066f9e45cc6", {
+      const makeBookingReq = await fetch("https://mag-dev.app.n8n.cloud/webhook/92a4bd63-f2cf-4a39-b980-7066f9e45cc6", {
         method: "POST",
         body: data,
       });
