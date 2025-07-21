@@ -100,13 +100,6 @@ const ContactForm = () => {
                     register={register}
                     label="Email Address"
                     name="email"
-                    options={{
-                      required: "Email Address is required",
-                      pattern: {
-                        value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                        message: "Email Address must be valid",
-                      },
-                    }}
                     className="bg-white text-black"
                     errors={errors}
                   />
