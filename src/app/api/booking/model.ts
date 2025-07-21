@@ -16,7 +16,7 @@ export const bookingPayloadSchema = z.object({
 })
 
 export const agentLead = z.object({
-    email: z.string().email({ message: "Invalid email address" }),
+    email: z.string({ message: "Email address is required" }),
     name: z.string(),
     mobile: z.string().trim().min(5, "Phone number is too short!").max(15, "Phone number too long!"),
     companyName: z.string(),
