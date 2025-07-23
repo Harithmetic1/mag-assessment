@@ -6,6 +6,7 @@ import FormInput from "./shared/FormInput";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import CustomButton from "./shared/CustomButton";
+import { submitLeadToAIAgent } from "@/lib/submit-to-ai-agent";
 
 const ContactForm = () => {
 
@@ -39,20 +40,13 @@ const ContactForm = () => {
   } = useMutation({
     mutationKey: ["make-booking", formValue.email],
     mutationFn: async (data: FormData) => {
-      const makeBookingReq = await fetch("https://mag-dev.app.n8n.cloud/webhook/92a4bd63-f2cf-4a39-b980-7066f9e45cc6", {
-        method: "POST",
-        body: data,
-      });
+      const req = await submitLeadToAIAgent(data)
 
-      const request = await makeBookingReq.json();
-
-      if (!makeBookingReq.ok) {
-        setShowStatus(true);
-        throw new Error(`Could not make booking: ${request.error}`);
-      }
-
-      return request;
+      return req
     },
+    onError: () => {
+      setShowStatus(true)
+    }
   });
 
       const handleSubmitBooking = async (data: agentLeadType) => {
