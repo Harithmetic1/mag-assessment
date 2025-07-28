@@ -202,7 +202,7 @@ const BookingModal = () => {
       if(makeBookingErr !== null){
         setShowStatus(true)
         setBookingFormError(makeBookingErr)
-        return makeBookingErr;  
+        throw new Error(makeBookingErr);  
       }
 
       queryClient.invalidateQueries({

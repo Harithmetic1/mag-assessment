@@ -18,7 +18,7 @@ export const submitBooking = async (bookingPayload: bookingPayload) => {
         fetch(`${process.env.MAG_BOOKING_API}/booking`, {
             method: "POST",
             headers: {
-                // Authorization: ``,
+                Authorization: `Bearer ${process.env.API_KEY}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(validatedPayload)
