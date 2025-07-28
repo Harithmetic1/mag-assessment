@@ -363,6 +363,13 @@ const BookingModal = () => {
                   />
                 ))}
               </div>
+                {
+                  !timeSlots || timeSlots.length === 0 && (
+                    <div className="col-span-full text-center  py-8">
+                      No available time slots for the selected date.
+                    </div>
+                  )
+                }
             </div>
             }
           </div>
