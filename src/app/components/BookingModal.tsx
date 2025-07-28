@@ -115,7 +115,7 @@ const BookingModal = () => {
       // console.log(error);
       setBookingFormError(error)
       setShowStatus(true)
-      return
+      throw new Error(error)
     }
 
     // console.log("Booking Slots: ", data, error);
