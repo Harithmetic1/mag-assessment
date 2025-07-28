@@ -112,7 +112,7 @@ const BookingModal = () => {
     const { data, error } = await getAvailableBusinessTimeSlots({ date: selectedDate });
 
     if (error !== null && isSubmitted) {
-      console.log(error);
+      // console.log(error);
       setBookingFormError(error)
       setShowStatus(true)
       return
@@ -215,6 +215,7 @@ const BookingModal = () => {
       })
 
       setShowStatus(true)
+      setOpenModal(false)
       return makeBookingReq;
     },
   });
