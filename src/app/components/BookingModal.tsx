@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
-import { DayPicker } from "react-day-picker";
+import { DateBefore, DayOfWeek, DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import TimeSlotCards from "./shared/TimeSlotCards";
 import FormInput from "./shared/FormInput";
@@ -13,29 +13,40 @@ import { useForm } from "react-hook-form";
 import { bookingType } from "../api/booking/model";
 import {
   formatDate,
-  processFormDataPayload,
 } from "../utils/utils";
-import { getAvailableBusinessTimeSlots, TimeSlotsResponse } from "../utils/availabilityUtils";
+import { getAvailableBusinessTimeSlots } from "../utils/availabilityUtils";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { submitBooking } from "@/lib/submit-booking";
+import { MAGBookingConfig } from "../utils/config";
+import { bookingPayload } from "@/lib/validation";
 
 const BookingModal = () => {
-  const today = React.useMemo(() => new Date(), []);
+  const currentAllowedDate = React.useMemo(() => {
+    const today = new Date()
+    const lastDate = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+
+    const dayOfTomorrow =  today.getDate() == lastDate.getDate() ? 1 : today.getDate() + 1
+
+    return new Date(today.getFullYear(), today.getMonth(), dayOfTomorrow)
+  }, []);
   const [selectedDate, setSelectedDate] = useState<Date>();
-  const [bookingDateCollection, setBookingDateCollection] = useState<
-    Record<string, any>
-  >([]);
+  // const [bookingDateCollection, setBookingDateCollection] = useState<
+  //   Record<string, any>
+  // >([]);
   const [selectedDateBookedTime, setSelectedDateBookedTime] = useState<
     string[]
   >([""]);
   const [scrollY, setScrollY] = useState(0);
   const [showStatus, setShowStatus] = useState(false);
-  const [timeSlots, setTimeSlots] = useState<TimeSlotsResponse | null>()
+  // const [timeSlots, setTimeSlots] = useState<TimeSlotsResponse | null>()
+  const [bookingFormError, setBookingFormError] = useState("");
 
   const {
     register,
     handleSubmit,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitted },
   } = useForm<bookingType>({
     defaultValues: {
       bookingDate: "",
@@ -69,13 +80,13 @@ const BookingModal = () => {
   }, [openModal, queryClient]);
 
   useEffect(() => {
-    setSelectedDate(today);
-  }, [today]);
+    setSelectedDate(currentAllowedDate);
+  }, [currentAllowedDate]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       setShowStatus(false);
-    }, 5000);
+    }, 15000);
 
     return () => {
       clearTimeout(timeout);
@@ -87,50 +98,73 @@ const BookingModal = () => {
     if (selectedDate) {
       index = formatDate(selectedDate);
     } else {
-      index = formatDate(today);
+      index = formatDate(currentAllowedDate);
     }
-    setSelectedDateBookedTime(bookingDateCollection[index] ?? []);
-  }, [bookingDateCollection, selectedDate, today]);
 
-  const handleCollectBookedTimes = (bookings: Record<string, any>[]) => {
-    const bookingDateCollection: Record<string, any> = {};
+    console.log(index);
+    
+    setSelectedDateBookedTime([]);
+  }, [ selectedDate, currentAllowedDate]);
 
-    bookings.forEach((booking) => {
-      if (bookingDateCollection[booking["bookingDate"]]) {
-        bookingDateCollection[booking["bookingDate"]].push(
-          booking["bookingTime"]
-        );
-      } else {
-        bookingDateCollection[booking["bookingDate"]] = [
-          booking["bookingTime"],
-        ];
-      }
-    });
+  const { data: timeSlots, isLoading: getTimeSlotsLoading } = useQuery({
+    queryKey: ["time-slots", selectedDate?.toISOString()],
+    queryFn: async () => {
+    const { data, error } = await getAvailableBusinessTimeSlots({ date: selectedDate });
+
+    if (error !== null && isSubmitted) {
+      console.log(error);
+      setBookingFormError(error)
+      setShowStatus(true)
+      return
+    }
+
+    // console.log("Booking Slots: ", data, error);
+    
+    return data;
+
+    },
+    enabled: !!selectedDate
+  })
+
+  // const handleCollectBookedTimes = (bookings: Record<string, any>[]) => {
+  //   const bookingDateCollection: Record<string, any> = {};
+
+  //   bookings.forEach((booking) => {
+  //     if (bookingDateCollection[booking["bookingDate"]]) {
+  //       bookingDateCollection[booking["bookingDate"]].push(
+  //         booking["bookingTime"]
+  //       );
+  //     } else {
+  //       bookingDateCollection[booking["bookingDate"]] = [
+  //         booking["bookingTime"],
+  //       ];
+  //     }
+  //   });
 
     // console.log(bookingDateCollection);
-    setBookingDateCollection(bookingDateCollection);
-  };
+    // setBookingDateCollection(bookingDateCollection);
+  // };
 
-  const { data, isError, error } = useQuery({
-    queryKey: ["bookings"],
-    queryFn: async () => {
-      const getBookingsReq = await fetch(`/api/booking`);
+  // const { data, isError, error } = useQuery({
+  //   queryKey: ["bookings"],
+  //   queryFn: async () => {
+  //     const getBookingsReq = await fetch(`/api/booking`);
 
-      const request = await getBookingsReq.json();
+  //     const request = await getBookingsReq.json();
 
-      if (!getBookingsReq.ok) {
-        setShowStatus(true);
-        throw new Error(request.error);
-      }
-      return request;
-    },
-  });
+  //     if (!getBookingsReq.ok) {
+  //       setShowStatus(true);
+  //       throw new Error(request.error);
+  //     }
+  //     return request;
+  //   },
+  // });
 
-  useEffect(() => {
-    if (data) {
-      handleCollectBookedTimes(data.data);
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     handleCollectBookedTimes(data.data);
+  //   }
+  // }, [data]);
 
   const formValue = watch();
 
@@ -142,26 +176,52 @@ const BookingModal = () => {
     error: makeBookingReqError,
   } = useMutation({
     mutationKey: ["make-booking", formValue.bookingEmail],
-    mutationFn: async (data: FormData) => {
-      const makeBookingReq = await fetch("/api/booking", {
-        method: "POST",
-        body: data,
-      });
+    mutationFn: async (data: bookingType) => {
+      const submitBookingPayload: bookingPayload = {
+        bookingBusinessName: MAGBookingConfig.bookingBusiness,
+        bookingBusinessServiceName: MAGBookingConfig.bookingBusinessService,
+        startTime: selectedTimeSlot.start,
+        endTime: selectedTimeSlot.end,
+        lead: {
+          companyName: "",
+          consent: true,
+          dialCode: "+971",
+          email: data.bookingEmail,
+          environment: "development",
+          firstName: "",
+          lastName: data.bookingName,
+          ipAddress: "::0",
+          landingURL: "http://localhost:3000/",
+          mobile: data.bookingPhoneNumber,
+          submissionArea: "Booking Form",
+          website: "Flowspark Booking Test",
+        }
+      }
+      const {data: makeBookingReq, error: makeBookingErr} = await submitBooking(submitBookingPayload)
 
-      const request = await makeBookingReq.json();
-
-      if (!makeBookingReq.ok) {
-        setShowStatus(true);
-        throw new Error(`Could not make booking: ${request.error}`);
+      if(makeBookingErr !== null){
+        setShowStatus(true)
+        setBookingFormError(makeBookingErr)
+        return makeBookingErr;  
       }
 
-      return request;
+      queryClient.invalidateQueries({
+        queryKey: ["time-slots", selectedDate?.toISOString()],
+      })
+
+      queryClient.refetchQueries({
+        queryKey: ["time-slots", selectedDate?.toISOString()],
+        refetchType: "all",
+      })
+
+      setShowStatus(true)
+      return makeBookingReq;
     },
   });
 
   useEffect(() => {
     handleSelectedBookedTime();
-  }, [data, bookingDateCollection, selectedDate, handleSelectedBookedTime]);
+  }, [selectedDate, handleSelectedBookedTime]);
 
   const handleSubmitBooking = async (data: bookingType) => {
     if (selectedDate) {
@@ -169,14 +229,14 @@ const BookingModal = () => {
     }
 
     if (selectedTimeSlot) {
-      data.bookingTime = selectedTimeSlot;
+      data.bookingTime = selectedTimeSlot.start;
     }
 
     data.bookingPhoneNumber = data.bookingPhoneNumber.split(" ").join("");
     // Convert data to FormData format
-    const formDataPayload = processFormDataPayload(data);
+    // const formDataPayload = processFormDataPayload(data);
 
-    await mutateAsync(formDataPayload);
+    await mutateAsync(data);
     setShowStatus(true);
     await queryClient.refetchQueries({ queryKey: ["bookings"] });
 
@@ -200,18 +260,29 @@ const BookingModal = () => {
     [setOpenModal, modalRef]
   );
 
-    const handleGetAvailableTimeSlots = React.useCallback(async () => {
-    const { data, error } = await getAvailableBusinessTimeSlots({ date: selectedDate });
+  //   const handleGetAvailableTimeSlots = React.useCallback(async () => {
+  //     setLoadingTimeSlots(true)
+  //   const { data, error } = await getAvailableBusinessTimeSlots({ date: selectedDate });
+  //     setLoadingTimeSlots(false)
 
-    if (error !== null) {
-      console.log(error);
-    }
+  //   if (error !== null && isSubmitted) {
+  //     console.log(error);
+  //     setBookingFormError(error)
+  //     setShowStatus(true)
+  //     return
+  //   }
 
-    setTimeSlots(data);
-  }, [selectedDate]);
+  //   // console.log("Booking Slots: ", data, error);
+    
+
+  //   setTimeSlots(data);
+  // }, [selectedDate, isSubmitted]);
+
+  // useEffect(() => {
+  //   handleGetAvailableTimeSlots()
+  // }, [isSubmitted, handleGetAvailableTimeSlots])
 
   useEffect(() => {
-    handleGetAvailableTimeSlots()
     if (openModal) {
       document.addEventListener("click", handleModalOutsideClick);
     } else {
@@ -221,9 +292,10 @@ const BookingModal = () => {
     return () => {
       document.removeEventListener("click", handleModalOutsideClick);
     };
-  }, [openModal, selectedDate, handleGetAvailableTimeSlots, handleModalOutsideClick]);
+  }, [openModal, selectedDate, handleModalOutsideClick]);
 
-
+  const disabledDates: DateBefore = { before: currentAllowedDate }
+  const disableWeekends: DayOfWeek = {dayOfWeek: [0, 6]}
 
   return (
     <div
@@ -258,6 +330,7 @@ const BookingModal = () => {
               </div>
               <DayPicker
                 className="border border-primary rounded-md"
+                disabled={[disabledDates, disableWeekends]}
                 mode="single"
                 selected={selectedDate}
                 onSelect={setSelectedDate}
@@ -268,9 +341,13 @@ const BookingModal = () => {
                 }
               />
             </div>
+            {
+              getTimeSlotsLoading ? <div className="loading w-full flex justify-center items-center h-full">
+                <AiOutlineLoading3Quarters className="animate-spin text-foreground w-20 h-20" />
+              </div> :
             <div className="flex-center flex-col w-full gap-4">
-              {showStatus && isError && (
-                <span className="text-red-500">{error.message}</span>
+              {showStatus && bookingFormError && (
+                <span className="text-red-500">{bookingFormError}</span>
               )}
               <div>
                 <h2>Select a Time</h2>
@@ -280,12 +357,13 @@ const BookingModal = () => {
                   <TimeSlotCards
                     key={timeSlot.start}
                     timeSlot={timeSlot.start}
-                    timeSlotValue={timeSlot.start}
+                    timeSlotValue={timeSlot}
                     bookedTimeSlots={selectedDateBookedTime}
                   />
                 ))}
               </div>
             </div>
+            }
           </div>
           <div className="w-full lg:w-full bg-secondary flex-center flex-col items-start rounded-3xl py-10">
             {showStatus && isSuccess && (

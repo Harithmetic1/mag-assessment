@@ -1,4 +1,5 @@
 "use server"
+import { isSameDay } from "date-fns";
 import { tryCatch } from "./utils";
 
   export type TimeSlot = {
@@ -10,11 +11,21 @@ import { tryCatch } from "./utils";
 export type TimeSlotsResponse = TimeSlot[];
 
   export const getAvailableBusinessTimeSlots = async ( {date} :  { date?: Date | undefined }) => {
-    const today = date ? date : new Date()
-    const getAvailabilityQueryParams = {
-      date: today.toISOString(),
+    const requestedDate = date ? date : new Date()
+    const now = new Date();
+    const sameDay = isSameDay(requestedDate, now)
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const getAvailabilityQueryParams: Record<string, string> = {
+      date: requestedDate.toLocaleDateString('sv-SE', {
+        timeZone: "Asia/Dubai"
+      }),
+      timeZone: timeZone,
       businessName: "MAG Int Booking Test",
       bookingBusinessServiceName: "Introductory Call - MAG INT test"
+    }
+
+    if(sameDay){
+      getAvailabilityQueryParams["startTime"] = now.toISOString().substring(11, 19);
     }
 
     const queryParams = new URLSearchParams(getAvailabilityQueryParams)

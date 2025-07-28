@@ -1,10 +1,11 @@
 import { useComponentStore } from "@/app/store/componentStore";
+import { TimeSlot } from "@/app/utils/availabilityUtils";
 import { TimeSlotCardState } from "@/app/utils/utils";
 import React, { useEffect, useState } from "react";
 
 type TimeSlotCardsProps = {
   timeSlot: string;
-  timeSlotValue: string;
+  timeSlotValue: TimeSlot;
   bookedTimeSlots: string[];
 };
 
@@ -27,7 +28,7 @@ const TimeSlotCards = ({
   };
 
   useEffect(() => {
-    if (bookedTimeSlots && bookedTimeSlots.includes(timeSlotValue)) {
+    if (bookedTimeSlots && bookedTimeSlots.includes(timeSlotValue.start)) {
       setTimeSlotState(TimeSlotCardState.BOOKED);
     } else if (timeSlotValue == selectedTimeSlot) {
       setTimeSlotState(TimeSlotCardState.SELECTED);
@@ -39,8 +40,13 @@ const TimeSlotCards = ({
     bookedTimeSlots,
     timeSlotValue,
   ]);
-
+  
+  // const timeZone = "Asia/Dubai"
   const timeSlotDateObject = new Date(timeSlot)
+
+  
+  
+
   const timeSlotString = `${timeSlotDateObject.getHours()}:${timeSlotDateObject.getMinutes() == 0 ? timeSlotDateObject.getMinutes() + "0" : timeSlotDateObject.getMinutes()}`
 
   return (

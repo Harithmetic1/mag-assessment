@@ -1,20 +1,25 @@
 import { create } from "zustand";
 import { Timer, TimerObjectDef } from "../utils/utils";
 import { EmblaCarouselType } from "embla-carousel";
+import { TimeSlot } from "../utils/availabilityUtils";
 
 interface ComponentState{
     openModal: boolean,
-    selectedTimeSlot: string,
+    selectedTimeSlot: TimeSlot,
     carouselTimer: TimerObjectDef | null,
     carouselController: EmblaCarouselType | null,
     setOpenModal: ( open: boolean ) => void,
-    setSelectedTimeSlot: (time: string) => void
+    setSelectedTimeSlot: (time: TimeSlot) => void
     setCarouselTimer: (emblaApi: EmblaCarouselType | undefined) => void
 }
 
 export const useComponentStore = create<ComponentState>()((set) => ({
     openModal: false,
-    selectedTimeSlot: "",
+    selectedTimeSlot: { 
+        start: "",
+        end: "",
+        staffIds: []
+    },
     carouselTimer: null,
     carouselController: null,
     setCarouselTimer: (emblaApi) => {
